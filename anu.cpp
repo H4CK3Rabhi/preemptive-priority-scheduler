@@ -1,6 +1,4 @@
 #include<stdio.h>
-#include<unistd.h>
-#include<sys/wait.h>
 #include<stdlib.h>
 
 #define NEW 0
