@@ -48,3 +48,113 @@ void enqueue(struct Process_structure *proc)
 			proc->next=RQueue->front->next;
 			proc->prev=RQueue->front;
 			RQueue->front->next=proc;
+                         if(proc->next!=NULL)
+                      {
+                        proc->next->prev=proc;
+                      }
+		}
+		else if(proc->timeleft_to_exec>RQueue->rear->timeleft_to_exec)
+		{
+			proc->next=NULL;
+			RQueue->rear->next=proc;
+			proc->prev=RQueue->rear;
+			RQueue->rear=proc;
+		}
+		else
+		{
+                   struct Process_structure *start=RQueue->front->next;
+		   while(start->timeleft_to_exec<proc->timeleft_to_exec)
+		   {
+			   start=start->next;
+		   }
+                   if(start!=NULL&& proc->timeleft_to_exec==start->timeleft_to_exec)
+                   {
+                          proc->next=start->next;
+                          start->next=proc;
+                          proc->prev=start;
+                      
+                   }
+                  else
+               {
+		   (start->prev)->next=proc;
+		   proc->next=start;
+		   proc->prev=start->prev;
+		   start->prev=proc;
+                }
+
+		}
+	}
+}
+struct Process_structure *  deQueue()
+{
+     if(RQueue->front==NULL)
+     {
+	     return NULL;
+     }
+     struct Process_structure * temp=RQueue->front;
+     RQueue->front=RQueue->front->next;
+     temp->next=NULL;
+     if(RQueue->front==NULL)
+     {
+	     RQueue->rear=NULL;
+     }
+     return temp;
+}
+void CQ()
+{
+int cnt=0;
+           for(i=0;i<n;i++)
+	   {
+                   
+		   if(proc_arr[i].state == NEW && ongoingtime>=proc_arr[i].at)
+		   {      
+			   
+			   enqueue(&proc_arr[i]);
+			   proc_arr[i].state=READY;
+			   
+                    }
+                  if(proc_arr[i].state==EXIT)
+                  {
+                    cnt++;
+			}
+	   }
+	   if(cnt==n)
+	   {
+		  EXIT_STATE_ALL=1; 
+		  
+	   }
+}
+int main()
+{
+
+
+RQueue =(struct Queue*) malloc(sizeof(struct Queue));
+	printf("            Please enter No of processes to schedule =");
+	scanf("%d",&n);
+	
+	proc_arr=(struct Process_structure *)malloc(sizeof(struct Process_structure)*n);
+	for(i=0;i<n;i++)
+	{
+             printf("\n\n        Enter Process Id For %d Process   =",(i+1));
+	     scanf("%d",&(proc_arr[i].pid));
+	     printf("\n         Enter arrival time For %d Process  =",(i+1));
+	     scanf("%d",&(proc_arr[i].at));
+	     printf("\n         Enter Execution time For %d Process=",(i+1));
+	     scanf("%d",&(proc_arr[i].timeleft_to_exec)); 
+	     
+            proc_arr[i].exect=proc_arr[i].timeleft_to_exec;
+	    proc_arr[i].state=NEW;
+	        
+	}
+ struct Process_structure key; 
+
+    for (i = 1; i < n; i++) { 
+        key = proc_arr[i]; 
+        j = i - 1; 
+  
+        while (j >= 0 && proc_arr[j].at > key.at) { 
+            proc_arr[j + 1] = proc_arr[j]; 
+            j = j - 1; 
+        } 
+        proc_arr[j + 1] = key; 
+    } 
