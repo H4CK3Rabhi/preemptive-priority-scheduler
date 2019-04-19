@@ -158,3 +158,105 @@ RQueue =(struct Queue*) malloc(sizeof(struct Queue));
         } 
         proc_arr[j + 1] = key; 
     } 
+
+struct Process_structure *pr;
+while(1)
+{
+        CQ();
+        if(EXIT_STATE_ALL==1)
+        {
+
+                    break;      
+        }
+        
+        if(RQueue->front!=NULL && CT_ALLOWED==1)
+	{
+             time_till_last_ct=1;
+	     pr=deQueue();
+             pr->state=RUNNING;
+             pr->timeleft_to_exec--;
+	     ongoingtime++;
+             if(time_till_last_ct==pr->exect)
+             {
+                  CT_ALLOWED=1;
+                  pr->state=EXIT;
+                  pr->ct=ongoingtime;
+                  pr->tat=ongoingtime-pr->at;
+                  pr->wt=pr->tat-pr->exect;
+             }
+             else
+            {
+               CT_ALLOWED=0;
+              }
+	}
+        else if(CT_ALLOWED==0&&pr!=NULL && pr->state==RUNNING )
+	{
+             if(pr->timeleft_to_exec==0)
+             {
+                  CT_ALLOWED=1;
+                  pr->state=EXIT;
+                  pr->ct=ongoingtime;
+                  pr->tat=ongoingtime-(pr->at);
+                  pr->wt=(pr->tat)-(pr->exect);
+                  continue;
+             }
+	     else if(RQueue->front!=NULL)
+             {
+                        if(pr->timeleft_to_exec>RQueue->front->timeleft_to_exec)
+             {
+                pr->state=READY;
+                enqueue(pr);
+                CT_ALLOWED=1;
+                continue;
+              }
+            
+             }    
+             time_till_last_ct++;
+             pr->timeleft_to_exec--;
+            ongoingtime++;
+
+             if(pr->timeleft_to_exec==0)
+             {
+                  CT_ALLOWED=1;
+                  pr->state=EXIT;
+                  pr->ct=ongoingtime;
+                  pr->tat=ongoingtime-(pr->at);
+                  pr->wt=(pr->tat)-(pr->exect);
+             }            
+             else if(RQueue->front!=NULL)
+             {
+                        if(pr->timeleft_to_exec>RQueue->front->timeleft_to_exec)
+             {
+                pr->state=READY;
+                enqueue(pr);
+                CT_ALLOWED=1;
+              }
+             else
+           {
+               CT_ALLOWED=0;          
+             }
+             }
+            else
+          { 
+              CT_ALLOWED=0;
+	  }
+
+          
+             
+          
+	}
+else
+{
+ongoingtime++;
+}
+}
+int sumwt=0,sumtat=0;
+for(i=0;i<n;i++)
+	{
+           printf("\n\nprocess pid=%d\tct=%d\ttat=%d\twt=%d",proc_arr[i].pid,proc_arr[i].ct,proc_arr[i].tat,proc_arr[i].wt);
+           sumwt+=proc_arr[i].wt;
+           sumtat+=proc_arr[i].tat;
+           
+	}
+printf("\n\n Avergae TAT=%f \t Average WT=%f\n",(sumtat/(n*1.0)),(sumwt/(n*1.0)));
+}
